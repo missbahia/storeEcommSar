@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة مبيعات المتجر الإلكتروني</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="translations.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1><i class="fas fa-store"></i> <span data-translate="appTitle">إدارة مبيعات المتجر</span></h1>
+                <div class="header-stats">
+                    <div class="stat-card">
+                        <i class="fas fa-dollar-sign"></i>
+                        <div>
+                            <span class="stat-label" data-translate="totalSales">إجمالي المبيعات</span>
+                            <span class="stat-value" id="totalSales">0 <span data-translate="currency">ر.س</span></span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-shopping-cart"></i>
+                        <div>
+                            <span class="stat-label" data-translate="todayOrders">الطلبات اليوم</span>
+                            <span class="stat-value" id="todayOrders">0</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-box"></i>
+                        <div>
+                            <span class="stat-label" data-translate="totalProducts">المنتجات</span>
+                            <span class="stat-value" id="totalProducts">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="nav-tabs">
+            <button class="tab-btn active" data-tab="dashboard">
+                <i class="fas fa-chart-line"></i> <span data-translate="dashboard">لوحة التحكم</span>
+            </button>
+            <button class="tab-btn" data-tab="products">
+                <i class="fas fa-box"></i> <span data-translate="products">المنتجات</span>
+            </button>
+            <button class="tab-btn" data-tab="orders">
+                <i class="fas fa-shopping-cart"></i> <span data-translate="orders">الطلبات</span>
+            </button>
+            <button class="tab-btn" data-tab="customers">
+                <i class="fas fa-users"></i> <span data-translate="customers">العملاء</span>
+            </button>
+            <button class="tab-btn" data-tab="analytics">
+                <i class="fas fa-chart-bar"></i> <span data-translate="analytics">التحليلات</span>
+            </button>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Tab -->
+            <div class="tab-content active" id="dashboard">
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <h3><i class="fas fa-chart-line"></i> <span data-translate="weekSales">مبيعات الأسبوع</span></h3>
+                        <canvas id="salesChart" width="400" height="200"></canvas>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fas fa-list"></i> <span data-translate="recentOrders">آخر الطلبات</span></h3>
+                        <div id="recentOrders" class="recent-orders">
+                            <!-- Recent orders will be populated here -->
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fas fa-star"></i> <span data-translate="topProducts">أفضل المنتجات مبيعاً</span></h3>
+                        <div id="topProducts" class="top-products">
+                            <!-- Top products will be populated here -->
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fas fa-exclamation-triangle"></i> <span data-translate="stockAlerts">تنبيهات المخزون</span></h3>
+                        <div id="stockAlerts" class="stock-alerts">
+                            <!-- Stock alerts will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Products Tab -->
+            <div class="tab-content" id="products">
+                <div class="section-header">
+                    <h2><i class="fas fa-box"></i> <span data-translate="productManagement">إدارة المنتجات</span></h2>
+                    <button class="btn btn-primary" id="addProductBtn">
+                        <i class="fas fa-plus"></i> <span data-translate="addNewProduct">إضافة منتج جديد</span>
+                    </button>
+                </div>
+                <div class="products-grid" id="productsGrid">
+                    <!-- Products will be populated here -->
+                </div>
+            </div>
+
+            <!-- Orders Tab -->
+            <div class="tab-content" id="orders">
+                <div class="section-header">
+                    <h2><i class="fas fa-shopping-cart"></i> <span data-translate="orderManagement">إدارة الطلبات</span></h2>
+                    <button class="btn btn-primary" id="addOrderBtn">
+                        <i class="fas fa-plus"></i> <span data-translate="addNewOrder">إضافة طلب جديد</span>
+                    </button>
+                </div>
+                <div class="section-header">
+                    <div class="filters">
+                        <select id="orderStatusFilter">
+                            <option value="" data-translate="allOrders">جميع الطلبات</option>
+                            <option value="pending" data-translate="pending">قيد الانتظار</option>
+                            <option value="processing" data-translate="processing">قيد المعالجة</option>
+                            <option value="shipped" data-translate="shipped">تم الشحن</option>
+                            <option value="delivered" data-translate="delivered">تم التسليم</option>
+                            <option value="cancelled" data-translate="cancelled">ملغي</option>
+                        </select>
+                        <input type="date" id="orderDateFilter" data-translate="orderDate" placeholder="تاريخ الطلب">
+                    </div>
+                </div>
+                <div class="orders-table">
+                    <table id="ordersTable">
+                        <thead>
+                            <tr>
+                                <th data-translate="orderNumber">رقم الطلب</th>
+                                <th data-translate="customer">العميل</th>
+                                <th data-translate="productsCol">المنتجات</th>
+                                <th data-translate="amount">المبلغ</th>
+                                <th data-translate="status">الحالة</th>
+                                <th data-translate="date">التاريخ</th>
+                                <th data-translate="actions">الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ordersTableBody">
+                            <!-- Orders will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Customers Tab -->
+            <div class="tab-content" id="customers">
+                <div class="section-header">
+                    <h2><i class="fas fa-users"></i> <span data-translate="customerManagement">إدارة العملاء</span></h2>
+                    <button class="btn btn-primary" id="addCustomerBtn">
+                        <i class="fas fa-user-plus"></i> <span data-translate="addNewCustomer">إضافة عميل جديد</span>
+                    </button>
+                </div>
+                <div class="customers-grid" id="customersGrid">
+                    <!-- Customers will be populated here -->
+                </div>
+            </div>
+
+            <!-- Analytics Tab -->
+            <div class="tab-content" id="analytics">
+                <div class="section-header">
+                    <h2><i class="fas fa-chart-bar"></i> <span data-translate="analyticsReports">التحليلات والتقارير</span></h2>
+                    <div class="date-range">
+                        <input type="date" id="analyticsStartDate">
+                        <input type="date" id="analyticsEndDate">
+                        <button class="btn btn-secondary" id="generateReportBtn" data-translate="generateReport">إنشاء تقرير</button>
+                    </div>
+                </div>
+                <div class="analytics-grid">
+                    <div class="card">
+                        <h3 data-translate="periodSales">مبيعات الفترة</h3>
+                        <canvas id="periodSalesChart" width="400" height="200"></canvas>
+                    </div>
+                    <div class="card">
+                        <h3 data-translate="productSalesDistribution">توزيع المبيعات حسب المنتج</h3>
+                        <canvas id="productSalesChart" width="400" height="200"></canvas>
+                    </div>
+                    <div class="card">
+                        <h3 data-translate="monthlyGrowth">نمو المبيعات الشهري</h3>
+                        <canvas id="monthlyGrowthChart" width="400" height="200"></canvas>
+                    </div>
+                    <div class="card">
+                        <h3 data-translate="customerPerformance">أداء العملاء</h3>
+                        <div id="customerPerformance" class="customer-performance">
+                            <!-- Customer performance data -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <!-- Add Product Modal -->
+    <div class="modal" id="productModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="productModalTitle" data-translate="addNewProduct">إضافة منتج جديد</h3>
+                <button class="close-btn" id="closeProductModal">&times;</button>
+            </div>
+            <form id="productForm">
+                <div class="form-group">
+                    <label for="productName" data-translate="productName">اسم المنتج</label>
+                    <input type="text" id="productName" required>
+                </div>
+                <div class="form-group">
+                    <label for="productPrice"><span data-translate="price">السعر</span> (<span data-translate="currency">ر.س</span>)</label>
+                    <input type="number" id="productPrice" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="productStock" data-translate="availableQuantity">الكمية المتوفرة</label>
+                    <input type="number" id="productStock" required>
+                </div>
+                <div class="form-group">
+                    <label for="productCategory" data-translate="category">الفئة</label>
+                    <select id="productCategory" required>
+                        <option value="" data-translate="selectCategory">اختر الفئة</option>
+                        <option value="electronics" data-translate="electronics">إلكترونيات</option>
+                        <option value="clothing" data-translate="clothing">ملابس</option>
+                        <option value="books" data-translate="books">كتب</option>
+                        <option value="home" data-translate="home">منزل وحديقة</option>
+                        <option value="sports" data-translate="sports">رياضة</option>
+                        <option value="beauty" data-translate="beauty">جمال وعناية</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="productDescription" data-translate="description">الوصف</label>
+                    <textarea id="productDescription" rows="3"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelProductBtn" data-translate="cancel">إلغاء</button>
+                    <button type="submit" class="btn btn-primary" data-translate="save">حفظ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Customer Modal -->
+    <div class="modal" id="customerModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="customerModalTitle" data-translate="addNewCustomer">إضافة عميل جديد</h3>
+                <button class="close-btn" id="closeCustomerModal">&times;</button>
+            </div>
+            <form id="customerForm">
+                <div class="form-group">
+                    <label for="customerName" data-translate="customerName">اسم العميل</label>
+                    <input type="text" id="customerName" required>
+                </div>
+                <div class="form-group">
+                    <label for="customerEmail" data-translate="email">البريد الإلكتروني</label>
+                    <input type="email" id="customerEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="customerPhone" data-translate="phone">رقم الهاتف</label>
+                    <input type="tel" id="customerPhone" required>
+                </div>
+                <div class="form-group">
+                    <label for="customerAddress" data-translate="address">العنوان</label>
+                    <textarea id="customerAddress" rows="3"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelCustomerBtn" data-translate="cancel">إلغاء</button>
+                    <button type="submit" class="btn btn-primary" data-translate="save">حفظ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Order Modal -->
+    <div class="modal" id="orderModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="orderModalTitle" data-translate="addNewOrder">إضافة طلب جديد</h3>
+                <button class="close-btn" id="closeOrderModal">&times;</button>
+            </div>
+            <form id="orderForm">
+                <div class="form-group">
+                    <label for="orderCustomer" data-translate="customer">العميل</label>
+                    <select id="orderCustomer" required>
+                        <option value="" data-translate="selectCustomer">اختر العميل</option>
+                        <!-- Customers will be populated here -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label data-translate="productsCol">المنتجات</label>
+                    <div id="orderProducts" class="order-products">
+                        <!-- Product selection will be here -->
+                    </div>
+                    <button type="button" class="btn btn-secondary" id="addProductToOrder">
+                        <i class="fas fa-plus"></i> <span data-translate="addProduct">إضافة منتج</span>
+                    </button>
+                </div>
+                <div class="form-group">
+                    <label for="orderStatus" data-translate="status">الحالة</label>
+                    <select id="orderStatus" required>
+                        <option value="pending" data-translate="pending">قيد الانتظار</option>
+                        <option value="processing" data-translate="processing">قيد المعالجة</option>
+                        <option value="shipped" data-translate="shipped">تم الشحن</option>
+                        <option value="delivered" data-translate="delivered">تم التسليم</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="orderDate" data-translate="date">التاريخ</label>
+                    <input type="date" id="orderDate" required>
+                </div>
+                <div class="form-group">
+                    <label data-translate="totalAmount">المبلغ الإجمالي</label>
+                    <div class="order-total" id="orderTotal">0 <span data-translate="currency">ر.س</span></div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelOrderBtn" data-translate="cancel">إلغاء</button>
+                    <button type="submit" class="btn btn-primary" data-translate="save">حفظ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
