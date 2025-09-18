@@ -35,7 +35,8 @@ class SalesManager {
                     price: 2500,
                     stock: 15,
                     category: 'electronics',
-                    description: 'هاتف ذكي بمواصفات عالية'
+                    description: 'هاتف ذكي بمواصفات عالية',
+                    image: null
                 },
                 {
                     id: 2,
@@ -43,7 +44,8 @@ class SalesManager {
                     price: 120,
                     stock: 50,
                     category: 'clothing',
-                    description: 'قميص قطني عالي الجودة'
+                    description: 'قميص قطني عالي الجودة',
+                    image: null
                 },
                 {
                     id: 3,
@@ -51,7 +53,8 @@ class SalesManager {
                     price: 85,
                     stock: 5,
                     category: 'books',
-                    description: 'كتاب تعليم البرمجة للمبتدئين'
+                    description: 'كتاب تعليم البرمجة للمبتدئين',
+                    image: null
                 }
             ];
         }
@@ -151,6 +154,14 @@ class SalesManager {
             this.addProductToOrder();
         });
 
+        // Image handling
+        document.getElementById('productImage').addEventListener('change', (e) => {
+            this.handleImageUpload(e);
+        });
+
+        document.getElementById('removeImageBtn').addEventListener('click', () => {
+            this.removeImage();
+        });
 
         // Close modals when clicking outside
         window.addEventListener('click', (e) => {
@@ -362,6 +373,7 @@ class SalesManager {
         const container = document.getElementById('productsGrid');
         container.innerHTML = this.products.map(product => `
             <div class="product-card">
+                ${product.image ? `<img src="${product.image}" alt="${product.name}" style="width: 100%; height: 150px; object-fit: cover; border-radius: 8px; margin-bottom: 15px;">` : ''}
                 <div class="product-header">
                     <div>
                         <div class="product-name">${product.name}</div>
@@ -409,10 +421,23 @@ class SalesManager {
             document.getElementById('productStock').value = product.stock;
             document.getElementById('productCategory').value = product.category;
             document.getElementById('productDescription').value = product.description;
+            
+            // Handle image
+            const imagePreview = document.getElementById('imagePreview');
+            const previewImg = document.getElementById('previewImg');
+            if (product.image) {
+                previewImg.src = product.image;
+                imagePreview.style.display = 'block';
+            } else {
+                previewImg.src = '';
+                imagePreview.style.display = 'none';
+            }
+            
             form.dataset.productId = productId;
         } else {
             title.textContent = this.languageManager.t('addNewProduct');
             form.reset();
+            this.removeImage(); // Clear image preview
             delete form.dataset.productId;
         }
         
@@ -428,12 +453,17 @@ class SalesManager {
         const form = e.target;
         const productId = form.dataset.productId;
         
+        // Get image data
+        const previewImg = document.getElementById('previewImg');
+        const imageData = previewImg.src && previewImg.src !== '' ? previewImg.src : null;
+        
         const productData = {
             name: document.getElementById('productName').value,
             price: parseFloat(document.getElementById('productPrice').value),
             stock: parseInt(document.getElementById('productStock').value),
             category: document.getElementById('productCategory').value,
-            description: document.getElementById('productDescription').value
+            description: document.getElementById('productDescription').value,
+            image: imageData
         };
 
         if (productId) {
@@ -1065,6 +1095,32 @@ class SalesManager {
     }
 
 
+
+    // Image handling functions
+    handleImageUpload(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const imagePreview = document.getElementById('imagePreview');
+                const previewImg = document.getElementById('previewImg');
+                
+                previewImg.src = e.target.result;
+                imagePreview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    removeImage() {
+        const imagePreview = document.getElementById('imagePreview');
+        const previewImg = document.getElementById('previewImg');
+        const fileInput = document.getElementById('productImage');
+        
+        previewImg.src = '';
+        imagePreview.style.display = 'none';
+        fileInput.value = '';
+    }
 
     // Utility Functions
     showMessage(message, type = 'success') {

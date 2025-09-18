@@ -159,7 +159,8 @@ const translations = {
         confirmDeleteCustomer: "هل أنت متأكد من حذف هذا العميل؟ سيتم حذف جميع طلبياته أيضاً",
         customerDeleted: "تم حذف العميل بنجاح",
         confirmDeleteOrder: "هل أنت متأكد من حذف هذه الطلبية؟",
-        orderDeleted: "تم حذف الطلبية بنجاح"
+        orderDeleted: "تم حذف الطلبية بنجاح",
+        productImage: "صورة المنتج"
     },
     
     en: {
@@ -321,7 +322,8 @@ const translations = {
         confirmDeleteCustomer: "Are you sure you want to delete this customer? All their orders will also be deleted",
         customerDeleted: "Customer deleted successfully",
         confirmDeleteOrder: "Are you sure you want to delete this order?",
-        orderDeleted: "Order deleted successfully"
+        orderDeleted: "Order deleted successfully",
+        productImage: "Product Image"
     }
 };
 
