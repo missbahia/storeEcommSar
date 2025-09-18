@@ -1065,6 +1065,7 @@ class SalesManager {
     }
 
 
+
     // Utility Functions
     showMessage(message, type = 'success') {
         // Create message element

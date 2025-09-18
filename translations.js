@@ -404,44 +404,39 @@ class LanguageManager {
         this.createLanguageToggle();
     }
     
-    // Create language toggle button
+    // Create language toggle buttons
     createLanguageToggle() {
-        const header = document.querySelector('.header-content');
-        if (!header) return;
-        
-        const languageToggle = document.createElement('div');
-        languageToggle.className = 'language-toggle';
-        languageToggle.innerHTML = `
-            <button class="lang-btn ${this.currentLanguage === 'ar' ? 'active' : ''}" data-lang="ar">
-                <i class="fas fa-globe"></i> العربية
-            </button>
-            <button class="lang-btn ${this.currentLanguage === 'en' ? 'active' : ''}" data-lang="en">
-                <i class="fas fa-globe"></i> English
-            </button>
-        `;
-        
-        // Insert before stats
-        const stats = header.querySelector('.header-stats');
-        header.insertBefore(languageToggle, stats);
-        
-        // Add event listeners
-        languageToggle.addEventListener('click', (e) => {
-            if (e.target.classList.contains('lang-btn') || e.target.parentElement.classList.contains('lang-btn')) {
-                const btn = e.target.classList.contains('lang-btn') ? e.target : e.target.parentElement;
-                const lang = btn.getAttribute('data-lang');
-                this.switchLanguage(lang);
-            }
+        // إضافة event listeners للأزرار الموجودة في HTML
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const lang = e.target.getAttribute('data-lang') || e.target.parentElement.getAttribute('data-lang');
+                if (lang) {
+                    this.switchLanguage(lang);
+                }
+            });
         });
+        
+        // تحديث حالة الأزرار
+        this.updateButtonStates();
     }
+    
+    // تحديث حالة الأزرار
+    updateButtonStates() {
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        const activeBtn = document.querySelector(`[data-lang="${this.currentLanguage}"]`);
+        if (activeBtn) {
+            activeBtn.classList.add('active');
+        }
+    }
+    
     
     // Switch language
     switchLanguage(lang) {
         if (this.setLanguage(lang)) {
             // Update button states
-            document.querySelectorAll('.lang-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            document.querySelector(`[data-lang="${lang}"]`).classList.add('active');
+            this.updateButtonStates();
             
             // Refresh the current view
             if (window.salesManager) {
